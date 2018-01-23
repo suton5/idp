@@ -5,6 +5,8 @@ using namespace std;
 
 int sensor1, sensor2, sensor3, sensor4, mA_power, mB_power;
 int sensor_threshold = 5;
+int mA_power_max = 255;
+int mB_power_max = 255;
 //sensor1-4 refer to readings from each line-following sensor
 //mA_power, mB_power refer to signal output to left and right drive motor, respectively
 //sensor_threshold is minimum reading from line-following sensor
@@ -79,6 +81,9 @@ void straight_motion_along_line() {
         turn = Kp*error + Ki*integral + Kd*derivative;
         mA_power = mA_power - turn;
         mB_power = mB_power + turn;
+		if (mA_power > mA_power_max) mA_power=mA_power_max; if (mA_power < -mA_power_max) mA_power=-mA_power_max;
+		if (mB_power > mB_power_max) mB_power=mB_power_max; if (mB_power < -mB_power_max) mB_power=-mB_power_max;
+		previous_error = error;
     }
 }
 
