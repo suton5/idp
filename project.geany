@@ -1,15 +1,14 @@
 [project]
-name=motor_test
+name=test
 base_path=/homes/st670/idp_shared/st670
 make_in_base_path=true
 description=1B IDP
 run_cmd=./test
 
 [files]
-current_page=2
-FILE_NAME_0=0;C++;0;EUTF-8;1;1;0;%2Fhomes%2Fst670%2Fidp_shared%2Fst670%2Fmotor_test.cpp;0;4
-FILE_NAME_1=142;C++;0;EUTF-8;1;1;0;%2Fhomes%2Fst670%2Fidp_shared%2Fst670%2Fstatusregister_test.cpp;0;4
-FILE_NAME_2=588;C++;0;EUTF-8;1;1;0;%2Fhomes%2Fst670%2Fidp_shared%2Fst670%2Fspeed_test.cpp;0;4
+current_page=0
+FILE_NAME_0=1860;C++;0;EUTF-8;1;1;0;%2Fhomes%2Fst670%2Fidp_shared%2Fst670%2Ftest.cpp;0;4
+FILE_NAME_1=1077;C++;0;EUTF-8;1;1;0;%2Fhomes%2Fst670%2Fidp_shared%2Fst670%2Fsensor_sim_test.cpp;0;4
 
 [indentation]
 indent_width=4
