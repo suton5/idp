@@ -31,16 +31,16 @@ int main() {
 
 	
 	while (true) {
-		unsigned val, val_last4;
+		unsigned val;
 		//unsigned mask;
 		//mask = (1 << 4) -1;
 		val = rlink.request (READ_PORT_5);
-		int line_sensors = val & 0x0f;
+		unsigned line_sensors = val & 0x0f;
 		//int line_sensors, line_sensors_binary;
 		//cin>>line_sensors_binary;
 		//line_sensors = BinaryToDecimal(line_sensors_binary);
 		cout << line_sensors<<endl;
-		/*
+		
 		switch (line_sensors) {
 			case 6 : //0110
 				cout<<"Stay straight"<<endl;
@@ -67,33 +67,11 @@ int main() {
 				rlink.command (MOTOR_1_GO, 128-10);
 				rlink.command (MOTOR_2_GO, 72+55);
 				break;
-				
-			case 15: //1111
-				cout<<"Right at juntion"<<endl;
-				rlink.command (MOTOR_1_GO, 255);
-				rlink.command (MOTOR_2_GO, 0);
-				delay(2500);
-				
-				if (junction_array[i] == 0){
-					line_sensors = 6;
-					i++;
-
-				}
-					
-				if (junction_array[i] == 1){
-					rlink.command (MOTOR_1_GO, 255);
-					rlink.command (MOTOR_2_GO, 0);
-					delay(2500);
-					i++
-
-				}
-			}
-				break; 
 			default :
 				cout<<"Stay straight"<<endl;
 				rlink.command (MOTOR_1_GO, 128+68);
-				rlink.command (MOTOR_2_GO, 72); 
-		} */
+				rlink.command (MOTOR_2_GO, 72);
+		}
 		
 	}
 			
