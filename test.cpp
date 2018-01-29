@@ -9,8 +9,11 @@ using namespace std;
 #include "initialise.h"
 #define ROBOT_NUM  15                         // The id number (see below)
 robot_link  rlink;
-int junction_array[3]  = {0,0,1};
-int i = 0;
+int junction_counter = 0;
+int junction_array[6]  = {0,0,1,1,0,1};
+unsigned val = rlink.request (READ_PORT_5);
+unsigned line_sensors = val & 0x0f;
+
 
 int BinaryToDecimal(int n)
 {
@@ -25,55 +28,88 @@ int BinaryToDecimal(int n)
     return decimalNumber;
 }
 
+void timed_forward_motion(int timing) {
+    //timing in ms
+    rlink.command (MOTOR_1_GO, 128+38);
+    rlink.command (MOTOR_2_GO, 42);
+    delay (timing);
+}
+
+void turn_90_right() {
+    rlink.command (MOTOR_1_GO, 255);
+    rlink.command (MOTOR_2_GO, 255);
+    delay(2300);
+}
+
+//unsigned mask;
+//mask = (1 << 4) -1;
+//int line_sensors, line_sensors_binary;
+//cin>>line_sensors_binary;
+//line_sensors = BinaryToDecimal(line_sensors_binary);
+void junction_tester() {
+    int current_junction = junction_counter;
+    if current_junction==0 {
+        timed_forward_motion(1000);
+    }
+    if current_junction==1 {
+        turn_90_right;
+    }
+    junction_counter++;
+}
+
+
+void line_follower() {
+    while (true) {
+        switch (line_sensors) {
+            case 6 : //0110
+                cout<<"Stay straight"<<endl;
+                rlink.command (MOTOR_1_GO, 128+68);
+                rlink.command (MOTOR_2_GO, 72);
+                break;
+            case 1 : //0001
+                cout<<"Hard right"<<endl;
+                rlink.command (MOTOR_1_GO, 128+68+59);
+                rlink.command (MOTOR_2_GO, 128+10);
+                break;
+            case 2 : //0010
+                cout<<"Slight right"<<endl;
+                rlink.command (MOTOR_1_GO, 128+68+30);
+                rlink.command (MOTOR_2_GO, 72-30);
+                break;
+            case 4 : //0100
+                cout<<"Slight left"<<endl;
+                rlink.command (MOTOR_1_GO, 128+68-30);
+                rlink.command (MOTOR_2_GO, 72+30);
+                break;
+            case 8 : //1000
+                cout<<"Hard left"<<endl;
+                rlink.command (MOTOR_1_GO, 10);
+                rlink.command (MOTOR_2_GO, 72+55);
+                break;
+            case 0 : //0000
+                cout<<"DANGER: Off path"<<endl;
+                rlink.command (MOTOR_1_GO, 20);
+                rlink.command (MOTOR_2_GO, 128+20)
+        }
+        
+    }
+}
+
 int main() {
 
 	initialise_robot();
-
 	
-	while (true) {
-		unsigned val;
-		//unsigned mask;
-		//mask = (1 << 4) -1;
-		val = rlink.request (READ_PORT_5);
-		unsigned line_sensors = val & 0x0f;
-		//int line_sensors, line_sensors_binary;
-		//cin>>line_sensors_binary;
-		//line_sensors = BinaryToDecimal(line_sensors_binary);
-		cout << line_sensors<<endl;
-		
-		switch (line_sensors) {
-			case 6 : //0110
-				cout<<"Stay straight"<<endl;
-				rlink.command (MOTOR_1_GO, 128+68);
-				rlink.command (MOTOR_2_GO, 72);
-				break;
-			case 1 : //0001
-				cout<<"Hard right"<<endl;
-				rlink.command (MOTOR_1_GO, 128+68+59);
-				rlink.command (MOTOR_2_GO, 128+10);
-				break;
-			case 2 : //0010
-				cout<<"Slight right"<<endl;
-				rlink.command (MOTOR_1_GO, 128+68+30);
-				rlink.command (MOTOR_2_GO, 72-30);
-				break;
-			case 4 : //0100
-				cout<<"Slight left"<<endl;
-				rlink.command (MOTOR_1_GO, 128+68-30);
-				rlink.command (MOTOR_2_GO, 72+30);
-				break;	
-			case 8 : //1000
-				cout<<"Hard left"<<endl;
-				rlink.command (MOTOR_1_GO, 128-10);
-				rlink.command (MOTOR_2_GO, 72+55);
-				break;
-			default :
-				cout<<"Stay straight"<<endl;
-				rlink.command (MOTOR_1_GO, 128+68);
-				rlink.command (MOTOR_2_GO, 72);
-		}
-		
-	}
-			
+    for (int i=0; i<3; i++) {
+    //CAN WHILE CONDITION BE PUT IN LINE_FOLLOWER ITSELF?
+    while (line_sensors==6 or line_sensors==1 or line_sensors==2 or line_sensors==4 or line_sensors==8) {
+        line_follower();
+    }
+    
+    //DO WE WANT IT TO STOP??
+    rlink.command (BOTH_MOTORS_GO_SAME, 0);
+    
+    junction_tester();
+    
+    }
 		return 0;
 }
