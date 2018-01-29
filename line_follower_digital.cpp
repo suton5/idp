@@ -3,18 +3,19 @@
 #include <iostream>
 #include <robot_instr.h>
 #include <robot_link.h>
+#include <robot_delay.h>
+
 using namespace std;
 
 #define ROBOT_NUM 15 // The id number (see below)
 robot_link rlink;
 
-int sensor1, sensor2, sensor3, sensor4;
-int sensor_threshold = 5;
 int MOTOR_MAX = 127;
 int MOTOR_MIN = 255;
 //sensor1-4 refer to readings from each line-following sensor
 //sensor_threshold is minimum reading from line-following sensor
 
+/*
 void timed_forward_motion(int timing) {
     //timing in ms
     time_t end = time(NULL) + timing/1000;
@@ -22,6 +23,14 @@ void timed_forward_motion(int timing) {
         rlink.command (BOTH_MOTORS_GO_SAME, 30);
     }
     rlink.command (BOTH_MOTORS_GO_SAME, 0);
+}
+ */
+
+void timed_forward_motion(int speed, int timing) {
+    //timing in ms
+    rlink.command (MOTOR_1_GO, 128-2+speed);
+    rlink.command (MOTOR_2_GO, speed+2);
+    delay (timing);
 }
 
 void turn_90_left() {
