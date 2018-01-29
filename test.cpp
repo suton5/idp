@@ -6,7 +6,7 @@ using namespace std;
 #include <robot_link.h>
 #include <robot_delay.h>
 #include <cmath>
-//#include "initialise.h"
+#include "initialise.h"
 #define ROBOT_NUM  15                         // The id number (see below)
 robot_link  rlink;
 int junction_counter = 0;
@@ -94,37 +94,24 @@ void line_follower() {
 }
 */
 int main() {
-
-	#ifdef __arm__
-	if (!rlink.initialise ()) {
-		cout << "Cannot initialise link" << endl;
-		rlink.print_errs("    ");
-		return -1;
-		}               // setup for local hardware
-		
-	#else
-	if (!rlink.initialise (ROBOT_NUM)) { 
-		cout << "Cannot initialise link" << endl;
-		rlink.print_errs("    ");
-		return -1;
-	} // setup the link
-	#endif
-	
-
-
+    
+    initialise_robot();
+    
     for (int i=0; i<5; i++) {
-
     //CAN WHILE CONDITION BE PUT IN LINE_FOLLOWER ITSELF?
     while (true) {
 		
 		int val = rlink.request (READ_PORT_5);
-		int line_sensors = val & 0x0f;
+		int line_sensors = val & 15; //extract 4 most LSB values 
 		
-		if (line_sensors==15 || line_sensors==14 || line_sensors==7){//(line_sensors!=2 && line_sensors!=1 && line_sensors!=6 && line_sensors!=4 && line_sensors!=8 & line_sensors!=0) {
+		/*
+        if (line_sensors==3 || line_sensors==5 || line_sensors==15 || line_sensors==14 || line_sensors==7 || line_sensors==9){
 			break;
 		}
-
-		
+        */
+        if (line_sensors && 9 == 9){
+            break;
+        }
 		
         switch (line_sensors) {
             case 6 : //0110
@@ -157,12 +144,12 @@ int main() {
                 rlink.command (MOTOR_1_GO, 20);
                 rlink.command (MOTOR_2_GO, 128+20);
                 break;
-                
+                /*
             default :
                 cout<<"Stay straight"<<endl;
                 rlink.command (MOTOR_1_GO, 128+68);
                 rlink.command (MOTOR_2_GO, 72);
-                break;
+                break; */
         }
         
     }
