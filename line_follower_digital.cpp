@@ -77,10 +77,10 @@ void straight_motion_along_line() {
 		line_sensors = BinaryToDecimal(line_sensors_binary);
 		
 		switch (line_sensors) {
-			case 6 : //0110
-				cout<<"Stay straight"<<endl;
-				rlink.command (MOTOR_1_GO, 128+68);
-				rlink.command (MOTOR_2_GO, 72);
+			case 0 : //0000
+				cout<<"Stranded"<<endl;
+				rlink.command (MOTOR_1_GO, 68);
+				rlink.command (MOTOR_2_GO, 128+72);
 				break;
 			case 1 : //0001
 				cout<<"Hard right"<<endl;
@@ -96,7 +96,19 @@ void straight_motion_along_line() {
 				cout<<"Slight left"<<endl;
 				rlink.command (MOTOR_1_GO, 128+68-30);
 				rlink.command (MOTOR_2_GO, 72+30);
-				break;	
+				break;
+			case 5 : //0101
+				cout<<"Reverse"<<endl;
+				rlink.command (MOTOR_1_GO, 68);
+				rlink.command (MOTOR_2_GO, 128+72);
+				break;
+			case 6 : //0110
+				cout<<"Stay straight"<<endl;
+				rlink.command (MOTOR_1_GO, 128+68);
+				rlink.command (MOTOR_2_GO, 72);
+				break;
+
+	
 			case 8 : //1000
 				cout<<"Hard left"<<endl;
 				rlink.command (MOTOR_1_GO, 128+68-59);
@@ -107,10 +119,8 @@ void straight_motion_along_line() {
 				rlink.command (MOTOR_1_GO, 127);
 				rlink.command (MOTOR_2_GO, 127);
 				break;*/
-			default :
-				cout<<"Stop"<<endl;
-				rlink.command (MOTOR_1_GO, 128);
-				rlink.command (MOTOR_2_GO, 0);
+
+
 		}
 }
 }

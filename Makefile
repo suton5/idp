@@ -1,3 +1,3 @@
 # Automatically generated Makefile
-test : test.cpp 
-	 g++ -ansi -Wall -g -I/export/teach/1BRobot -L/export/teach/1BRobot test.cpp -o test -lrobot
+line_follower_digital : line_follower_digital.cpp 
+	 g++ -ansi -Wall -g -I/export/teach/1BRobot -L/export/teach/1BRobot line_follower_digital.cpp -o line_follower_digital -lrobot

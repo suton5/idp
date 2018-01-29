@@ -6,9 +6,11 @@ using namespace std;
 #include <robot_link.h>
 #include <robot_delay.h>
 #include <cmath>
+#include "initialise.h"
 #define ROBOT_NUM  15                         // The id number (see below)
 robot_link  rlink;
-
+int junction_array[3]  = {0,0,1};
+int i = 0;
 
 int BinaryToDecimal(int n)
 {
@@ -25,20 +27,8 @@ int BinaryToDecimal(int n)
 
 int main() {
 
-	#ifdef __arm__
-	if (!rlink.initialise ()) {
-		cout << "Cannot initialise link" << endl;
-		rlink.print_errs("    ");
-		return -1;
-		}               // setup for local hardware
-		
-	#else
-	if (!rlink.initialise (ROBOT_NUM)) { 
-		cout << "Cannot initialise link" << endl;
-		rlink.print_errs("    ");
-		return -1;
-	} // setup the link
-	#endif
+	initialise_robot();
+
 	
 	while (true) {
 		unsigned val, val_last4;
@@ -76,10 +66,27 @@ int main() {
 				rlink.command (MOTOR_1_GO, 128-10);
 				rlink.command (MOTOR_2_GO, 72+55);
 				break;
-			case 15 : //1111
-				cout<<"Left at juntion"<<endl;
-				rlink.command (MOTOR_1_GO, 127);
-				rlink.command (MOTOR_2_GO, 127);
+				/*
+			case 15: //1111
+				cout<<"Right at juntion"<<endl;
+				rlink.command (MOTOR_1_GO, 255);
+				rlink.command (MOTOR_2_GO, 0);
+				delay(2500);
+				
+				if (junction_array[i] == 0){
+					line_sensors = 6;
+					i++;
+
+				}
+					
+				if (junction_array[i] == 1){
+					rlink.command (MOTOR_1_GO, 255);
+					rlink.command (MOTOR_2_GO, 0);
+					delay(2500);
+					i++
+
+				}*/	
+			}
 				break;
 			default :
 				cout<<"Stay straight"<<endl;
