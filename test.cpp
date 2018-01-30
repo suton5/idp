@@ -11,12 +11,11 @@ using namespace std;
 robot_link  rlink;
 int junction_counter = 0;
 int junction_array[5]  = {0,1,1,0,1};
+int array_size = sizeof(junction_array)/sizeof(junction_array[0]);
 
-int BinaryToDecimal(int n)
-{
+int BinaryToDecimal(int n) {
     int decimalNumber = 0, i = 0, remainder;
-    while (n!=0)
-    {
+    while (n!=0) {
         remainder = n%10;
         n /= 10;
         decimalNumber += remainder*pow(2,i);
@@ -33,9 +32,9 @@ void timed_forward_motion(int timing) {
 }
 
 void turn_90_right() {
-    rlink.command (MOTOR_1_GO, 255);
+    rlink.command (MOTOR_1_GO, 182);
     rlink.command (MOTOR_2_GO, 182);
-    delay(1200);
+    delay(1000);
     while (true) {
 		int val = rlink.request (READ_PORT_5);
 		int line_sensors = val & 15; //extract 4 most LSB values 
@@ -46,13 +45,7 @@ void turn_90_right() {
 	}
 }
 
-//unsigned mask;
-//mask = (1 << 4) -1;
-//int line_sensors, line_sensors_binary;
-//cin>>line_sensors_binary;
-//line_sensors = BinaryToDecimal(line_sensors_binary);
 void junction_tester() {
-    //int current_junction = junction_counter;
     if (junction_array[junction_counter]==0) {
         timed_forward_motion(1000);
     }
@@ -63,61 +56,17 @@ void junction_tester() {
     junction_counter++;
 }
 
-/*
-void line_follower() {
-    while (true) {
-        switch (line_sensors) {
-            case 6 : //0110
-                cout<<"Stay straight"<<endl;
-                rlink.command (MOTOR_1_GO, 128+68);
-                rlink.command (MOTOR_2_GO, 72);
-                break;
-            case 1 : //0001
-                cout<<"Hard right"<<endl;
-                rlink.command (MOTOR_1_GO, 128+68+59);
-                rlink.command (MOTOR_2_GO, 128+10);
-                break;
-            case 2 : //0010
-                cout<<"Slight right"<<endl;
-                rlink.command (MOTOR_1_GO, 128+68+30);
-                rlink.command (MOTOR_2_GO, 72-30);
-                break;
-            case 4 : //0100
-                cout<<"Slight left"<<endl;
-                rlink.command (MOTOR_1_GO, 128+68-30);
-                rlink.command (MOTOR_2_GO, 72+30);
-                break;
-            case 8 : //1000
-                cout<<"Hard left"<<endl;
-                rlink.command (MOTOR_1_GO, 10);
-                rlink.command (MOTOR_2_GO, 72+55);
-                break;
-            case 0 : //0000
-                cout<<"DANGER: Off path"<<endl;
-                rlink.command (MOTOR_1_GO, 20);
-                rlink.command (MOTOR_2_GO, 128+20);
-                break;
-        }
-        
-    }
-}
-*/
+
 int main() {
     
     initialise_robot();
     
-    for (int i=0; i<5; i++) {
-    //CAN WHILE CONDITION BE PUT IN LINE_FOLLOWER ITSELF?
+    for (int i=0; i<array_size; i++) {
     while (true) {
 		
 		int val = rlink.request (READ_PORT_5);
 		int line_sensors = val & 15; //extract 4 most LSB values 
-		
-		/*
-        if (line_sensors==3 || line_sensors==5 || line_sensors==15 || line_sensors==14 || line_sensors==7 || line_sensors==9){
-			break;
-		}
-        */
+
         if (line_sensors bitand 9 == 9){
             cout<<"BREAKING WITH:"<<line_sensors<<endl;
             break;
@@ -154,18 +103,10 @@ int main() {
                 rlink.command (MOTOR_1_GO, 20);
                 rlink.command (MOTOR_2_GO, 128+20);
                 break;
-                /*
-            default :
-                cout<<"Stay straight"<<endl;
-                rlink.command (MOTOR_1_GO, 128+68);
-                rlink.command (MOTOR_2_GO, 72);
-                break; */
+
         }
         
     }
-    //cout<<"BROKEN"<<endl;
-    //DO WE WANT IT TO STOP??
-    //rlink.command (BOTH_MOTORS_GO_SAME, 0);
     
     junction_tester();
     cout<<i<<endl;
