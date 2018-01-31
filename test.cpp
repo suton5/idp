@@ -10,7 +10,7 @@ using namespace std;
 #define ROBOT_NUM  15
 robot_link  rlink;
 int junction_counter = 0;
-int junction_array[7]  = {1,0,1,1,0,0,2};
+int junction_array[7]  = {1,0,1,1,0,0,4};
 int array_size = sizeof(junction_array)/sizeof(junction_array[0]);
 
 int BinaryToDecimal(int n) {
@@ -48,6 +48,15 @@ void turn_90_right() {
 	}
 }
 
+void recovery() {
+	static int i=1;
+	//rlink.command (MOTOR_1_GO, ((i+1)%2)*(10*i)+(i%2)*(128+10*i));
+	//rlink.command (MOTOR_2_GO, ((i+1)%2)*(10*i)+(i%2)*(128+10*i));
+	rlink.command (BOTH_MOTORS_GO_SAME, ((i+1)%2)*(100)+(i%2)*(228));
+	delay(100+10*i);
+	i++;
+}
+
 void junction_tester() {
     if (junction_array[junction_counter]==0) {
         timed_forward_motion(500);
@@ -55,7 +64,7 @@ void junction_tester() {
     if (junction_array[junction_counter]==1) {
         turn_90_right();
     }
-    if (junction_array[junction_counter]==2) {
+    if (junction_array[junction_counter]==4) {
         timed_forward_motion(4500);
     }
     cout<<junction_counter<<endl;
@@ -108,8 +117,7 @@ int main() {
                 
             case 0 : //0000
                 cout<<"0000 DANGER: Off path"<<endl;
-                rlink.command (MOTOR_1_GO, 20);
-                rlink.command (MOTOR_2_GO, 128+20);
+				recovery();
                 break; 
 
         }
