@@ -37,15 +37,12 @@ int main() {
 	} // setup the link
 	#endif
 	
-	unsigned val, val_last4;
-	unsigned mask;
-	mask = (1 << 4) -1;
+	unsigned val;
 	while (true) {
 	//rlink.command (WRITE_PORT_5, v);
-	val = rlink.request (READ_PORT_5);
+	val = rlink.request (READ_PORT_0);
 	//unsigned r = createMask(0, 3);
-	val_last4 = val & mask;
-	cout << convertDecimalToBinary(val_last4) <<endl;
+	cout << val<<endl;
 
 	//val &= ~0xf;
 	//val |= v & 0xf;

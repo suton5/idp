@@ -1,9 +1,13 @@
 #include <iostream>
 using namespace std;
+#include <stdio.h>
+#include <stdlib.h>
 #include <robot_instr.h>
 #include <robot_link.h>
+#include <robot_delay.h>
+#include <cmath>
 #define ROBOT_NUM  15
-#include "initialise.h"
+robot_link  rlink;
 
 int initialise_robot() {
 
