@@ -6,9 +6,10 @@ using namespace std;
 #include <robot_link.h>
 #include <robot_delay.h>
 #include <cmath>
-#include <time.h>
-#include <stopwatch.h>
-#define ROBOT_NUM  15
-extern robot_link  rlink;
 
-int initialise_robot();
+int main() {
+	while (delay(3000)) {
+		cout<<"HI"<<endl;
+	}
+	return 0;
+}
