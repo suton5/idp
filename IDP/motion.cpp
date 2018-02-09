@@ -1,15 +1,17 @@
 #include "initialise.h"
+#include "motion.h"
 
 int junction_counter = 0;
 int i = 1;
-int junction_array[13] ={0,0,1,0,0,1,5,0,0,6,0,4};//{0,0,1,1,1,4};//;//{5,0,6,4};
+int junction_array[12] ={0,0,1,0,0,1,5,0,0,6,0,4};//{0,0,1,1,1,4};//;//{5,0,6,4};
 int array_size = sizeof(junction_array)/sizeof(junction_array[0]);
+int speed_factor = 0;
 
 
 void timed_forward_motion(int timing) {
     //timing in ms
-    rlink.command (MOTOR_1_GO, 128+68);
-    rlink.command (MOTOR_2_GO, 72);
+    rlink.command (MOTOR_1_GO, 128+68+speed_factor);
+    rlink.command (MOTOR_2_GO, 72+speed_factor);
     delay (timing);
 }
 
@@ -29,8 +31,8 @@ void turn_90_left() {
 
 void turn_90_right() {
 	//delay(20);
-    rlink.command (MOTOR_1_GO, 150); 
-    rlink.command (MOTOR_2_GO, 150); 
+    rlink.command (MOTOR_1_GO, 150+speed_factor); 
+    rlink.command (MOTOR_2_GO, 150+speed_factor); 
     delay(1500);
     while (true) {
 		int val = rlink.request (READ_PORT_5);
@@ -76,8 +78,8 @@ void turn_135_right() {
 
 void dropping_1(){
 	//delay(120);
-    rlink.command (MOTOR_1_GO, 150); 
-    rlink.command (MOTOR_2_GO, 150); 
+    rlink.command (MOTOR_1_GO, 150+speed_factor); 
+    rlink.command (MOTOR_2_GO, 150+speed_factor); 
     delay(1000);
     while (true) {
 		int val = rlink.request (READ_PORT_5);
@@ -87,8 +89,8 @@ void dropping_1(){
 		int line_sensors_C = (line_sensors bitand 4) >> 2;
 		//int line_sensors_D = (line_sensors bitand 8) >> 3;
         if ((line_sensors_B bitand line_sensors_C)){
-			rlink.command (MOTOR_1_GO, 68); 
-			rlink.command (MOTOR_2_GO, 128+72);
+			rlink.command (MOTOR_1_GO, 68+speed_factor); 
+			rlink.command (MOTOR_2_GO, 128+72+speed_factor);
 			delay(1100);
 			rlink.command (MOTOR_1_GO, 0); 
 			rlink.command (MOTOR_2_GO, 0);
@@ -100,8 +102,8 @@ void dropping_1(){
 
 void dropping_2() {
     //timing in ms
-	rlink.command (MOTOR_1_GO, 68); 
-	rlink.command (MOTOR_2_GO, 128+72);
+	rlink.command (MOTOR_1_GO, 68+speed_factor); 
+	rlink.command (MOTOR_2_GO, 128+72+speed_factor);
 	delay(1100);
     rlink.command (MOTOR_1_GO, 0);
     rlink.command (MOTOR_2_GO, 0);
@@ -109,7 +111,6 @@ void dropping_2() {
 }
 
 void recovery() {
-    cout<<i<<endl;
     delay(150);
 	int val = rlink.request (READ_PORT_5);
 	int line_sensors = val & 15; //extract 4 most LSB values 
@@ -129,6 +130,8 @@ void recovery() {
 	}
 	
 	int total_time = watch.stop();
+	cout<<"Failure number: "<<i<<" Time taken: "<<total_time<<endl;
+
 	i++;
 	}
 }
@@ -143,7 +146,7 @@ void line_follower() {
 		int line_sensors_C = (line_sensors bitand 4) >> 2;
 		int line_sensors_D = (line_sensors bitand 8) >> 3;
 
-        if ((line_sensors_A bitor line_sensors_D)){// bitand (line_sensors_B bitor line_sensors_C)){
+        if ((line_sensors_A bitor line_sensors_D) bitand (line_sensors_B bitor line_sensors_C)){
             cout<<"BREAKING WITH:"<<line_sensors<<endl;
             break;
         }
@@ -151,19 +154,19 @@ void line_follower() {
         switch (line_sensors) {
             case 6 : //0110
                 //cout<<"0110 Stay straight"<<endl;
-                rlink.command (MOTOR_1_GO, 128+68);
-                rlink.command (MOTOR_2_GO, 72);
+                rlink.command (MOTOR_1_GO, 128+68+speed_factor);
+                rlink.command (MOTOR_2_GO, 72+speed_factor);
                 i=1;
                 break;
             case 2 : //0010
                 //cout<<"0010 Slight right"<<endl;
-                rlink.command (MOTOR_1_GO, 128+68+10);
-                rlink.command (MOTOR_2_GO, 72-10);
+                rlink.command (MOTOR_1_GO, 128+68+10+speed_factor);
+                rlink.command (MOTOR_2_GO, 72-10+speed_factor);
                 break;
             case 4 : //0100
                 //cout<<"0100 Slight left"<<endl;
-                rlink.command (MOTOR_1_GO, 128+68-10);
-                rlink.command (MOTOR_2_GO, 72+10);
+                rlink.command (MOTOR_1_GO, 128+68-10+speed_factor);
+                rlink.command (MOTOR_2_GO, 72+10+speed_factor);
                 break;
             case 0 : //0000
                 //cout<<"0000 DANGER: Off path"<<endl;

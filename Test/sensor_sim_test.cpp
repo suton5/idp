@@ -40,7 +40,8 @@ int main() {
 	int val;
 	while (true) {
 	//rlink.command (WRITE_PORT_5, v);
-	val = rlink.request (READ_PORT_5);
+	val = rlink.request (READ_PORT_0);
+	val = val bitand 128;
 	//unsigned r = createMask(0, 3);
 	cout << convertDecimalToBinary(val)<<endl;
 

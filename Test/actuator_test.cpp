@@ -58,14 +58,21 @@ delay(2000);
 //c<<convertDecimalToBinary(val)<<endl;
 //rlink.command (MOTOR_4_GO, 126);
 //delay(4000);
-rlink.command(WRITE_PORT_0, 255);
-delay(2000);
+//rlink.command(WRITE_PORT_0, 255);
+//delay(2000);
+for (int i=0; i<9; i++){
 rlink.command(WRITE_PORT_0, 0);
 delay(2000);
 rlink.command (MOTOR_4_GO, 255);
 delay(4000);
-
-
+rlink.command (MOTOR_4_GO, 0);
+delay(2000);
+rlink.command (MOTOR_4_GO, 100);
+delay(4100);
+rlink.command(WRITE_PORT_0, 255);
+delay(2000);
+}
+//delay(2000);
 //int tmp;
 //cin >> tmp;
 
