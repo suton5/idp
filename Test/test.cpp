@@ -9,7 +9,7 @@ using namespace std;
 #include "initialise.h"
 
 int junction_counter = 0;
-int junction_array[3]  = {1,1,0};//{1,0,1,1,0,0,4};
+int junction_array[4]  = {0,0,0,1};//{1,0,1,1,0,0,4};
 int array_size = sizeof(junction_array)/sizeof(junction_array[0]);
 
 int BinaryToDecimal(int n) {

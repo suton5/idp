@@ -33,7 +33,7 @@ if (!rlink.initialise (ROBOT_NUM)) {
 //rlink.command (MOTOR_3_GO, 255);
 //while (true) {
 //rlink.command (MOTOR_1_GO, 255-100);
-rlink.command (MOTOR_2_GO, 127);
+rlink.command (MOTOR_4_GO, 158);
 //rlink.command (MOTOR_3_GO, 127);
 //rlink.command (MOTOR_4_GO, 127);
 
