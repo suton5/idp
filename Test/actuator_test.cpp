@@ -9,8 +9,9 @@ using namespace std;
 #define ROBOT_NUM  15
 robot_link  rlink;
 
-//high bit 6, contract box
-//high bit 7, contract claw
+//high bit 5, contract box
+//high bit 6, contract claw
+int choice;
 
 int convertDecimalToBinary(int n) {
     long long binaryNumber = 0;
@@ -24,7 +25,33 @@ int convertDecimalToBinary(int n) {
     return binaryNumber;
 }
 
-
+void selector(int choice) {
+	if (choice == 0) { //cabbage
+		rlink.command(WRITE_PORT_0, 0);
+		delay(2000);
+		rlink.command (MOTOR_4_GO, 255);
+		delay(4000);
+		rlink.command (MOTOR_4_GO, 0);
+		delay(2000);
+		rlink.command (MOTOR_4_GO, 100);
+		delay(2300);
+		rlink.command(WRITE_PORT_0, 64);
+		delay(2000);
+	}
+	
+	if (choice == 1) { //cauliflower
+		rlink.command(WRITE_PORT_0, 32);
+		delay(2000);
+		rlink.command (MOTOR_4_GO, 255);
+		delay(4000);
+		rlink.command (MOTOR_4_GO, 0);
+		delay(2000);
+		rlink.command (MOTOR_4_GO, 100);
+		delay(2300);
+		rlink.command(WRITE_PORT_0, 96);
+		delay(2000);
+	}
+}
 int initialise_robot() {
 
 	#ifdef __arm__
@@ -47,19 +74,9 @@ return 0;
 
 int main(){
 initialise_robot();
+selector(1);
+//rlink.command(WRITE_PORT_0, 0);
 /*
-for (int i = 0; i<8; i++){
-cout<<i<<endl;
-rlink.command(WRITE_PORT_0, pow(2,i));
-delay(2000);
-}
-* */
-//int val = rlink.request(READ_PORT_0);
-//c<<convertDecimalToBinary(val)<<endl;
-//rlink.command (MOTOR_4_GO, 126);
-//delay(4000);
-//rlink.command(WRITE_PORT_0, 255);
-//delay(2000);
 for (int i=0; i<9; i++){
 rlink.command(WRITE_PORT_0, 0);
 delay(2000);
@@ -70,14 +87,7 @@ delay(2000);
 rlink.command (MOTOR_4_GO, 100);
 delay(4100);
 rlink.command(WRITE_PORT_0, 255);
-delay(2000);
+delay(2000);*/
 }
-//delay(2000);
-//int tmp;
-//cin >> tmp;
 
-//rlink.command(WRITE_PORT_0, 64);
-
-}
-       
 

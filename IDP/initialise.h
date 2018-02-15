@@ -9,5 +9,5 @@ using namespace std;
 #include <stopwatch.h>
 #define ROBOT_NUM  15
 extern robot_link  rlink;
-
+extern int i;
 int initialise_robot();
