@@ -1,6 +1,6 @@
 extern int junction_counter;
 extern int i;
-extern int junction_array[11];
+extern int junction_array[10];
 extern int array_size;
 extern int speed_factor;
 extern int motor_1_initial;

@@ -70,12 +70,8 @@ void returning() {
   rlink.command(MOTOR_1_GO, 0);
   rlink.command(MOTOR_2_GO, 0);
 }
-
-/*    
-int main() {
-    
-    initialise_robot();
-    line_follower();
+  
+void dropper() {
 	dropping_1();
 	returning();
 	cout<<"Returned"<<endl;
@@ -90,7 +86,4 @@ int main() {
 	dropping_2();
 	returning();
 	line_follower_straight(10000);
-
-	return 0;
 }
-*/
