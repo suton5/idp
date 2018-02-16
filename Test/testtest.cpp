@@ -66,10 +66,13 @@ int main() {
 	//rlink.command (WRITE_PORT_0, BinaryToDecimal(11111111));
 	//int ldr_reading=rlink.request (ADC4);
 	//cout<<ldr_reading<<endl;
-	int tmp;
-	cin>>tmp;
-	rlink.command(WRITE_PORT_5, BinaryToDecimal(tmp));
-	
-	
+	//int tmp;
+	//cin>>tmp;
+	//rlink.command(WRITE_PORT_5, BinaryToDecimal(tmp));
+	rlink.command (WRITE_PORT_0, 255);
+	int reading = rlink.request (READ_PORT_0);
+	int reading1 = reading bitand 128;
+	int reading2 = reading1 >> 7;
+	cout << reading2<<endl;
 }
 }

@@ -1,9 +1,9 @@
 [project]
-name=testtest
+name=testtest.arm
 base_path=/homes/st670/idp_shared/st670/Test
 make_in_base_path=true
 description=1B IDP
-run_cmd=./testtest
+run_cmd=./testtest.arm
 
 [files]
 current_page=0
