@@ -15,6 +15,8 @@ int array_size = sizeof(junction_array)/sizeof(junction_array[0]);
 int speed_factor = 15;
 int motor_1_initial = 50;
 int motor_2_initial = 50;
+int distance_sensor_threshold = 200;
+int ldr_reading_threshold = 165;
 #define ROBOT_NUM  15                         // The id number (see below)
 robot_link  rlink;
 
@@ -28,6 +30,17 @@ int convertDecimalToBinary(int n) {
         i *= 10;
     }
     return binaryNumber;
+}
+
+int BinaryToDecimal(int n) {
+    int decimalNumber = 0, i = 0, remainder;
+    while (n!=0) {
+        remainder = n%10;
+        n /= 10;
+        decimalNumber += remainder*pow(2,i);
+        ++i;
+    }
+    return decimalNumber;
 }
 
 void recovery() {
@@ -59,20 +72,20 @@ void recovery() {
 void line_follower_straight(int timing) {
 		    stopwatch watch1;
 			watch1.start();
-	cout<<"Watch created"<<endl;
+	//cout<<"Watch created"<<endl;
     while (watch1.read()<timing) {
-		cout<<"Straight"<<endl;	
-			cout<<watch1.read()<<endl;
+		//cout<<"Straight"<<endl;	
+			//cout<<watch1.read()<<endl;
 		int val = rlink.request (READ_PORT_5);
 		int line_sensors = val bitand 15; //extract 4 most LSB values
 		int line_sensors_A = line_sensors bitand 1;
 		int line_sensors_B = (line_sensors bitand 2) >> 1;
 		int line_sensors_C = (line_sensors bitand 4) >> 2;
 		int line_sensors_D = (line_sensors bitand 8) >> 3;
-		cout<<line_sensors<<endl;
+		//cout<<line_sensors<<endl;
 		
 		if (line_sensors_B bitand line_sensors_C) {
-			                cout<<"0110 Stay straight"<<endl;
+			                //cout<<"0110 Stay straight"<<endl;
                 rlink.command (MOTOR_1_GO, 128+motor_1_initial+speed_factor);
                 rlink.command (MOTOR_2_GO, motor_2_initial+speed_factor);
                 i=1;
@@ -140,31 +153,40 @@ void line_follower() {
     }
 }
 
-void selector(int choice) {
-	if (choice == 0) { //cabbage
-		rlink.command(WRITE_PORT_0, 0);
+void pickup_selector(int choice) {
+	if (choice == 0) { //cauliflower
+		cout<<"Cauliflower"<<endl;
+		rlink.command(WRITE_PORT_0, BinaryToDecimal(10011111));
 		delay(2000);
 		rlink.command (MOTOR_4_GO, 255);
-		delay(4000);
+		delay(5200); //3500
 		rlink.command (MOTOR_4_GO, 0);
 		delay(2000);
 		rlink.command (MOTOR_4_GO, 100);
-		delay(2100);
-		rlink.command(WRITE_PORT_0, 64);
+		delay(4200); //2000
+		rlink.command (MOTOR_4_GO, 0);
+		rlink.command(WRITE_PORT_0, BinaryToDecimal(11011111));
 		delay(2000);
+		
 	}
 	
-	if (choice == 1) { //cauliflower
-		rlink.command(WRITE_PORT_0, 32);
+	if (choice == 1) { //cabbage
+				cout<<"Cabbage"<<endl;
+
+		rlink.command(WRITE_PORT_0, BinaryToDecimal(10111111));//01100000
+		int val1 = rlink.request(READ_PORT_0);
 		delay(2000);
 		rlink.command (MOTOR_4_GO, 255);
-		delay(4000);
+		delay(5200);
 		rlink.command (MOTOR_4_GO, 0);
 		delay(2000);
 		rlink.command (MOTOR_4_GO, 100);
-		delay(2100);
-		rlink.command(WRITE_PORT_0, 96);
+		delay(4200);
+		rlink.command (MOTOR_4_GO, 0);
+		rlink.command(WRITE_PORT_0, BinaryToDecimal(11111111));//00010000
 		delay(2000);
+		
+
 	}
 }
 
@@ -186,65 +208,76 @@ int main() {
 	
 	//line_follower_straight(9999999999);
 
-
 	while (true) {
-	rlink.command (WRITE_PORT_0, 247);
+	rlink.command (WRITE_PORT_0, BinaryToDecimal(11111111));
 	int ldr_reading=rlink.request (ADC4);
-	cout<<ldr_reading<<endl;
-	//int distance_reading = rlink.request (READ_PORT_0);
+	//cout<<ldr_reading<<endl;
+	
+	int reading = rlink.request (READ_PORT_0);
+	int reading1 = reading bitand 128;
+	int reading2 = reading1 >> 7;
 	//cout<<distance_reading<<endl;
-	/*if (distance_reading<200){
-		delay(750);
-		 rlink.command (BOTH_MOTORS_GO_SAME,0);
-		//rlink.command (WRITE_PORT_0, 247);
-		 //int ldr_reading=rlink.request (ADC4);
-		 //cout<<ldr_reading<<endl;
-		 //rlink.command (WRITE_PORT_0, 255);
-		 selector(0);
-		 
-	 }*/
-	//val = rlink.request (READ_PORT_0);
-	/*
-		int val = rlink.request (READ_PORT_5);
-		int line_sensors = val bitand 15; //extract 4 most LSB values
-		int line_sensors_A = line_sensors bitand 1;
-		int line_sensors_B = (line_sensors bitand 2) >> 1;
-		int line_sensors_C = (line_sensors bitand 4) >> 2;
-		int line_sensors_D = (line_sensors bitand 8) >> 3;
-		  
-        switch (line_sensors) {
-            case 6 : //0110
-                //cout<<"0110 Stay straight"<<endl;
-                rlink.command (MOTOR_1_GO, 128+motor_1_initial+speed_factor);
-                rlink.command (MOTOR_2_GO, motor_2_initial+speed_factor);
-                i=1;
-                break;
-            case 2 : //0010
-                //cout<<"0010 Slight right"<<endl;
-                rlink.command (MOTOR_1_GO, 128+motor_1_initial+5+speed_factor);
-                rlink.command (MOTOR_2_GO, motor_2_initial-5+speed_factor);
-                break;
-            case 4 : //0100
-                //cout<<"0100 Slight left"<<endl;
-                rlink.command (MOTOR_1_GO, 128+motor_1_initial-5+speed_factor);
-                rlink.command (MOTOR_2_GO, motor_2_initial+5+speed_factor);
-                break;
-            case 0 : //0000
-                //cout<<"0000 DANGER: Off path"<<endl;
-recovery();
-                break; 
-
+	
+	if (reading2==0){
+		rlink.command (WRITE_PORT_0, BinaryToDecimal(11110111));
+		delay(100);
+		rlink.command (BOTH_MOTORS_GO_SAME,0);
+		cout << ldr_reading << endl;
+		delay(5000);
+		/*
+		if (ldr_reading<ldr_reading_threshold) { //cabbage
+			line_follower_straight(750-200);
+			rlink.command (BOTH_MOTORS_GO_SAME,0);
+			
+			pickup_selector(1);
+		}
+		
+		else { //cauliflower
+			line_follower_straight(750-200);
+			rlink.command (BOTH_MOTORS_GO_SAME,0);
+			
+			pickup_selector(0);
+		}*/
+	}
+	
+	
+	int val = rlink.request (READ_PORT_5);
+	int line_sensors = val bitand 15; //extract 4 most LSB values
+	int line_sensors_A = line_sensors bitand 1;
+	int line_sensors_B = (line_sensors bitand 2) >> 1;
+	int line_sensors_C = (line_sensors bitand 4) >> 2;
+	int line_sensors_D = (line_sensors bitand 8) >> 3;
+	 
+	        if ((line_sensors_A bitor line_sensors_D) bitand (line_sensors_B bitor line_sensors_C)){
+            //cout<<"BREAKING WITH:"<<convertDecimalToBinary(line_sensors)<<endl;
+            break;
         }
-        
-        */
+	
+	
+	switch (line_sensors) {
+		case 6 : //0110
+			//cout<<"0110 Stay straight"<<endl;
+			rlink.command (MOTOR_1_GO, 128+motor_1_initial+speed_factor);
+			rlink.command (MOTOR_2_GO, motor_2_initial+speed_factor);
+			i=1;
+			break;
+		case 2 : //0010
+			//cout<<"0010 Slight right"<<endl;
+			rlink.command (MOTOR_1_GO, 128+motor_1_initial+5+speed_factor);
+			rlink.command (MOTOR_2_GO, motor_2_initial-5+speed_factor);
+			break;
+		case 4 : //0100
+			//cout<<"0100 Slight left"<<endl;
+			rlink.command (MOTOR_1_GO, 128+motor_1_initial-5+speed_factor);
+			rlink.command (MOTOR_2_GO, motor_2_initial+5+speed_factor);
+			break;
+		case 0 : //0000
+			//cout<<"0000 DANGER: Off path"<<endl;
+			recovery();
+			break; 
+
     }
-    
-    cout<<"Cabbage detected"<<endl;
-
-	
-	
-
-	
+	}
 	return 0;
 
 }
