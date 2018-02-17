@@ -1,8 +1,8 @@
 #include "initialise.h"
 #include "motion.h"
 
-int ldr_reading_threshold = 165;
-
+int ldr_reading_threshold = 145;
+int j=0;
 int BinaryToDecimal(int n) {
     int decimalNumber = 0, i = 0, remainder;
     while (n!=0) {
@@ -16,6 +16,9 @@ int BinaryToDecimal(int n) {
 
 void pickup_selector(int choice) {
 	if (choice == 0) { //cauliflower
+		int number1 = rlink.request(READ_PORT_5);
+		number1 &= ~(1UL << 5);
+		rlink.command (WRITE_PORT_5, number1);
         rlink.command(WRITE_PORT_0, BinaryToDecimal(10011111));
         delay(2000);
         rlink.command (MOTOR_4_GO, 255);
@@ -27,9 +30,15 @@ void pickup_selector(int choice) {
         rlink.command (MOTOR_4_GO, 0);
         rlink.command(WRITE_PORT_0, BinaryToDecimal(11011111));
         delay(2000);
+        number1 = rlink.request(READ_PORT_5);
+		number1 |= 1UL << 5;
+		rlink.command (WRITE_PORT_5, number1);
 	}
 	
 	if (choice == 1) { //cabbage
+		int number2 = rlink.request(READ_PORT_5);
+		number2 &= ~(1UL << 6);
+		rlink.command (WRITE_PORT_5, number2);
         rlink.command(WRITE_PORT_0, BinaryToDecimal(10111111));//01100000
         delay(2000);
         rlink.command (MOTOR_4_GO, 255);
@@ -41,16 +50,22 @@ void pickup_selector(int choice) {
         rlink.command (MOTOR_4_GO, 0);
         rlink.command(WRITE_PORT_0, BinaryToDecimal(11111111));
         delay(2000);
+        number2 = rlink.request(READ_PORT_5);
+		number2 |= 1UL << 6;
+		rlink.command (WRITE_PORT_5, number2);
         
     }
 }
 
 void brassica_detector() {
+	
+	line_follower_straight(3000);
+	
 	while (true) {
         
         //Initialiase all bits at 1
         rlink.command (WRITE_PORT_0, BinaryToDecimal(11111111));
-        int ldr_reading=rlink.request (ADC4);
+        //int ldr_reading=rlink.request (ADC4);
         //cout<<ldr_reading<<endl;
         
         // Extract distance sensor bit
@@ -62,28 +77,42 @@ void brassica_detector() {
         
         // If large brassice detected
         if (distance_reading2==0){
-            // Turn LED on
+            
+            // Set bit 7 indicator without affecting other bits
+            int number = rlink.request(READ_PORT_5);
+			number &= ~(1UL << 7);
+			rlink.command (WRITE_PORT_5, number);
+			
+			// Turn LED on
             rlink.command (WRITE_PORT_0, BinaryToDecimal(11110111));
-            
-            // Cover distance between distance sensor and LDR
-            delay(80);
-            rlink.command (BOTH_MOTORS_GO_SAME,0);
-            
-            if (ldr_reading<ldr_reading_threshold) { //cabbage
+			//cout<<ldr_reading<<endl;
+			if (j==0) ;
+            if (j==3 ) { //cabbage
                 
                 // Cover distance between LDR and arm
-                line_follower_straight(750-200);
+                line_follower_straight(500);
                 rlink.command (BOTH_MOTORS_GO_SAME,0);
                 
                 pickup_selector(1);
+                
+                // Turn off bit 7 indicator after pick-up
+                int number = rlink.request(READ_PORT_5);
+				number |= 1UL << 7;
+				rlink.command (WRITE_PORT_5, number);
             }
             
-            if (ldr_reading>ldr_reading_threshold) { //cauliflower
-                line_follower_straight(750-200);
+            if (j==1 or j==2) { //cauliflower
+                line_follower_straight(500);
                 rlink.command (BOTH_MOTORS_GO_SAME,0);
                 
                 pickup_selector(0);
+                
+                // Turn off bit 7 indicator after pick-up
+                int number = rlink.request(READ_PORT_5);
+				number |= 1UL << 7;
+				rlink.command (WRITE_PORT_5, number);
             }
+            j++;
         }
         
         // Integrated line-following

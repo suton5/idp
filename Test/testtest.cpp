@@ -69,10 +69,63 @@ int main() {
 	//int tmp;
 	//cin>>tmp;
 	//rlink.command(WRITE_PORT_5, BinaryToDecimal(tmp));
+	
+	        if (distance_reading2==0){
+            
+            // Set bit 7 indicator without affecting other bits
+            int number = rlink.request(READ_PORT_5);
+			number &= ~(1UL << 7);
+			rlink.command (WRITE_PORT_5, number);
+			
+			// Turn LED on
+            rlink.command (WRITE_PORT_0, BinaryToDecimal(11110111));
+
+            if (ldr_reading<ldr_reading_threshold) { //cabbage
+                
+                // Cover distance between LDR and arm
+                line_follower_straight(245);
+                rlink.command (BOTH_MOTORS_GO_SAME,0);
+                
+                pickup_selector(1);
+                
+                // Turn off bit 7 indicator after pick-up
+                int number = rlink.request(READ_PORT_5);
+				number |= 1UL << 7;
+				rlink.command (WRITE_PORT_5, number);
+            }
+            
+            if (ldr_reading>ldr_reading_threshold) { //cauliflower
+                line_follower_straight(245);
+                rlink.command (BOTH_MOTORS_GO_SAME,0);
+                
+                pickup_selector(0);
+                
+                // Turn off bit 7 indicator after pick-up
+                int number = rlink.request(READ_PORT_5);
+				number |= 1UL << 7;
+				rlink.command (WRITE_PORT_5, number);
+            }
+        }
+	
+	
+	int tmp, tmp1;
+	
+	cin>>tmp;
+	            int number = rlink.request(READ_PORT_5);
+			number &= ~(1UL << 7);
+			rlink.command (WRITE_PORT_5, number);
+			
+				cin>>tmp1;
+
+			                 number = rlink.request(READ_PORT_5);
+				number |= 1UL << 7;
+				rlink.command (WRITE_PORT_5, number);
+	/*
 	rlink.command (WRITE_PORT_0, 255);
 	int reading = rlink.request (READ_PORT_0);
 	int reading1 = reading bitand 128;
 	int reading2 = reading1 >> 7;
 	cout << reading2<<endl;
+*/
 }
 }

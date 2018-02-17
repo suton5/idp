@@ -249,25 +249,21 @@ void line_follower_straight(int timing) {
                 rlink.command (MOTOR_1_GO, 128+motor_1_initial+speed_factor);
                 rlink.command (MOTOR_2_GO, motor_2_initial+speed_factor);
                 i=1;
-                break;
 			}
 			
 		if (!line_sensors_B bitand line_sensors_C) {
 			    //cout<<"0010 Slight right"<<endl;
-                rlink.command (MOTOR_1_GO, 128+motor_1_initial+10+speed_factor);
-                rlink.command (MOTOR_2_GO, motor_2_initial-10+speed_factor);
-                break;
+                rlink.command (MOTOR_1_GO, 128+motor_1_initial+5+speed_factor);
+                rlink.command (MOTOR_2_GO, motor_2_initial-5+speed_factor);
 			}
 			if (line_sensors_B bitand !line_sensors_C) {
 				//cout<<"0100 Slight left"<<endl;
-                rlink.command (MOTOR_1_GO, 128+motor_1_initial-10+speed_factor);
-                rlink.command (MOTOR_2_GO, motor_2_initial+10+speed_factor);
-                break;
+                rlink.command (MOTOR_1_GO, 128+motor_1_initial-5+speed_factor);
+                rlink.command (MOTOR_2_GO, motor_2_initial+5+speed_factor);
 			}
 			if (!line_sensors_B bitand !line_sensors_C) {
 				//cout<<"0000 DANGER: Off path"<<endl;
 				recovery();
-                break; 
 			}
     }
 }
@@ -300,6 +296,9 @@ void junction_tester() {
     }
     if (junction_array[junction_counter]==8) {
         dropper();
+        int number = rlink.request(READ_PORT_5);
+		number |= 1UL << 4;
+		rlink.command (WRITE_PORT_5, number);
     }
     if (junction_array[junction_counter]==9) {
         timed_forward_motion(800);

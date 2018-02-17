@@ -16,9 +16,17 @@ int speed_factor = 15;
 int motor_1_initial = 50;
 int motor_2_initial = 50;
 int distance_sensor_threshold = 200;
-int ldr_reading_threshold = 165;
+int ldr_reading_threshold = 120;
 #define ROBOT_NUM  15                         // The id number (see below)
 robot_link  rlink;
+
+
+void timed_forward_motion(int timing) {
+    //timing in ms
+    rlink.command (MOTOR_1_GO, 128+98);
+    rlink.command (MOTOR_2_GO, 102);
+    delay (timing);
+}
 
 int convertDecimalToBinary(int n) {
     long long binaryNumber = 0;
@@ -210,34 +218,37 @@ int main() {
 
 	while (true) {
 	rlink.command (WRITE_PORT_0, BinaryToDecimal(11111111));
-	int ldr_reading=rlink.request (ADC4);
+
 	//cout<<ldr_reading<<endl;
 	
 	int reading = rlink.request (READ_PORT_0);
 	int reading1 = reading bitand 128;
 	int reading2 = reading1 >> 7;
-	//cout<<distance_reading<<endl;
+	//cout<<reading2<<endl;
 	
 	if (reading2==0){
 		rlink.command (WRITE_PORT_0, BinaryToDecimal(11110111));
-		delay(100);
-		rlink.command (BOTH_MOTORS_GO_SAME,0);
+		//rlink.command (BOTH_MOTORS_GO_SAME,0);
+			int ldr_reading=rlink.request (ADC4);
 		cout << ldr_reading << endl;
-		delay(5000);
-		/*
+		
+		
 		if (ldr_reading<ldr_reading_threshold) { //cabbage
-			line_follower_straight(750-200);
+			cout<<"CABBAGE"<<endl;
+			timed_forward_motion(500);
 			rlink.command (BOTH_MOTORS_GO_SAME,0);
-			
-			pickup_selector(1);
+			delay(2000);
+			//pickup_selector(1);
 		}
 		
 		else { //cauliflower
-			line_follower_straight(750-200);
+			cout <<"CAULIFLOWER"<<endl;
+			timed_forward_motion(500);
 			rlink.command (BOTH_MOTORS_GO_SAME,0);
-			
-			pickup_selector(0);
-		}*/
+			delay(2000);
+			//pickup_selector(0); 
+		}
+		delay(5000);
 	}
 	
 	
@@ -276,8 +287,10 @@ int main() {
 			recovery();
 			break; 
 
-    }
+    } 
 	}
+	
+
 	return 0;
 
 }

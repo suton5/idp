@@ -1,3 +1,3 @@
-# Automatically generated Makefile for arm
-testtest.arm : testtest.cpp 
-	 arm-linux-gnueabi-g++ -ansi -Wall -g -I/usr/arm-unknown-linux-gnueabi/include -I/export/teach/1BRobot -L/usr/arm-unknown-linux-gnueabi/lib testtest.cpp -o testtest.arm -lrobot
+# Automatically generated Makefile
+test2 : test2.cpp 
+	 g++ -ansi -Wall -g -I/export/teach/1BRobot -L/export/teach/1BRobot test2.cpp -o test2 -lrobot
